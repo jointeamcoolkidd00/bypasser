@@ -2,11 +2,11 @@
   "name": "coolkidd-api",
   "version": "1.0.0",
   "main": "api/index.js",
+  "type": "module",
   "scripts": {
     "start": "node api/index.js"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
-  },
-  "type": "module"
+  }
 }
