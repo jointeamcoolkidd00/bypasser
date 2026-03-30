@@ -1,2 +1,43 @@
-<h1>Bypasser Active</h1>
-<script>console.log('Bypass logic goes here');</script>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CoolKidd Bypasser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #121212; color: white; }
+        input { padding: 10px; width: 80%; max-width: 400px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; background: #00ff00; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Delta Key Bypasser</h1>
+    <p>Paste your link below:</p>
+    <input type="text" id="linkInput" placeholder="https://linkvertise.com...">
+    <br>
+    <button onclick="startBypass()">Bypass Link</button>
+    <p id="status"></p>
+
+    <script>
+        async function startBypass() {
+            const link = document.getElementById('linkInput').value;
+            const status = document.getElementById('status');
+            if(!link) return alert("Please paste a link!");
+            
+            status.innerText = "Bypassing... please wait.";
+            
+            // This uses a public free API to do the work
+            try {
+                const response = await fetch(`https://api.bypass.vip{encodeURIComponent(link)}`);
+                const data = await response.json();
+                if(data.result) {
+                    status.innerHTML = `<a href="${data.result}" style="color: #00ff00;">Click here for your Key/Link</a>`;
+                } else {
+                    status.innerText = "Bypass failed. Try a different link.";
+                }
+            } catch (err) {
+                status.innerText = "Error connecting to bypass server.";
+            }
+        }
+    </script>
+</body>
+</html>
