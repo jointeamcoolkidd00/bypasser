@@ -9,6 +9,7 @@ app.get('/api', async (req, res) => {
   if (!url) return res.status(400).json({ error: "Missing URL" });
 
   try {
+    // FIXED SHADYBOT LINK BELOW:
     const response = await fetch(`https://api.shadybot.xyz{encodeURIComponent(url)}`);
     const data = await response.json();
     res.status(200).json({ result: data.result });
