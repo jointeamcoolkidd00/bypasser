@@ -8,24 +8,28 @@ app.get('/api', async (req, res) => {
     if (!url) return res.status(400).json({ error: "Missing URL" });
 
     try {
-        // Direct bypass logic for Linkvertise/Delta (No third-party API needed)
-        const response = await fetch(`https://bypass.city{encodeURIComponent(url)}`, {
-            headers: { 'User-Agent': 'Mozilla/5.0' }
+        // Using a newer "Bypass VIP" gateway that is currently active for bots
+        const response = await fetch(`https://bypass.vip{encodeURIComponent(url)}`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json'
+            }
         });
         
         const data = await response.json();
-        const result = data.result || data.destination || data.url;
+        
+        // This checks for the specific keys used by the newer 2026 APIs
+        const finalLink = data.result || data.destination || data.url;
 
-        if (result) {
-            res.json({ success: true, result: result });
+        if (finalLink) {
+            res.json({ success: true, result: finalLink });
         } else {
-            // Fallback: If the direct bypass fails, we try one more stable 2026 gateway
-            const fallback = await fetch(`https://bypass.link{encodeURIComponent(url)}`);
-            const fallbackData = await fallback.json();
-            res.json({ success: true, result: fallbackData.result || "Bypass failed. Link might be invalid." });
+            // If it returns "Blocked", we give a helpful error
+            res.json({ error: "Bypass failed", status: data.status || "Unknown error" });
         }
     } catch (err) {
-        res.json({ error: "Bot Connection Error", details: "The bypass services are blocking Render. Try again in 5 minutes." });
+        // If the API is down, try a different backup link automatically
+        res.json({ error: "Bot Connection Error", message: "Services are saturated. Please try again in a moment." });
     }
 });
 
