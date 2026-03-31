@@ -1,5 +1,4 @@
-const express = require('express');
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+import express from 'express';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,11 +8,10 @@ app.get('/api', async (req, res) => {
     if (!url) return res.status(400).json({ error: "Missing URL" });
 
     try {
-        // Updated to use a working 2026 bypass gateway
+        // We use global fetch (built into Node 22, which Render is using)
         const response = await fetch(`https://bypasstec.com{encodeURIComponent(url)}`);
         const data = await response.json();
         
-        // This ensures it works whether the API returns 'destination' or 'result'
         const finalLink = data.destination || data.result || data.url;
 
         if (finalLink) {
