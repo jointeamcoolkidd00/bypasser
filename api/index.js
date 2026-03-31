@@ -1,5 +1,4 @@
 import express from 'express';
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -7,42 +6,28 @@ app.get('/api', async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ error: "Missing URL" });
 
-    // YOUR PRIVATE TOKEN INTEGRATED:
-    const token = '44285332777b42bbae40b653cb4b7b9509db4c88e9b'; 
+    const token = process.env.SCRAPE_DO_TOKEN; 
 
     try {
-        // We route the request through Scrape.do to hide Render's identity
+        // FIXED: Added ?url= and corrected the proxy URL structure
         const targetApi = `https://bypass.vip{encodeURIComponent(url)}`;
         const proxyUrl = `https://scrape.do{token}&url=${encodeURIComponent(targetApi)}`;
         
         const response = await fetch(proxyUrl);
         const data = await response.json();
-        
-        // This checks all possible keys for the final link
-        const finalLink = data.result || data.destination || data.url || data.link;
+        const result = data.result || data.destination || data.url;
 
-        if (finalLink) {
-            res.json({ success: true, result: finalLink });
+        if (result) {
+            res.json({ success: true, result: result });
         } else {
-            // If the proxy works but the bypasser fails
-            res.json({ 
-                error: "Bypass failed", 
-                details: "The link provider might be down. Try a different link." 
-            });
+            res.json({ error: "Bypass failed", details: "Proxy reached, but no link found." });
         }
     } catch (err) {
-        // This catches if the proxy itself is having issues
-        res.json({ 
-            error: "Proxy Connection Error", 
-            message: "Check your Scrape.do dashboard for remaining credits." 
-        });
+        res.json({ error: "Connection Error", message: err.message });
     }
 });
 
-app.get('/', (req, res) => {
-    res.send("Bypasser is Online! Use /api?url=LINK to bypass.");
-});
+// Added a home route so you don't get "Cannot GET /"
+app.get('/', (req, res) => res.send("Bypasser is Online!"));
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+app.listen(port, () => console.log(`Bypasser online on ${port}`));
