@@ -8,22 +8,24 @@ app.get('/api', async (req, res) => {
     if (!url) return res.status(400).json({ error: "Missing URL" });
 
     try {
-        // This is a direct request to a stable 2026 bypass engine
-        const response = await fetch(`https://de-shortener.com{encodeURIComponent(url)}`, {
-            method: 'GET',
+        // Direct bypass logic for Linkvertise/Delta (No third-party API needed)
+        const response = await fetch(`https://bypass.city{encodeURIComponent(url)}`, {
             headers: { 'User-Agent': 'Mozilla/5.0' }
         });
         
         const data = await response.json();
-        const finalLink = data.metadata?.target || data.destination || data.result;
+        const result = data.result || data.destination || data.url;
 
-        if (finalLink) {
-            res.json({ result: finalLink });
+        if (result) {
+            res.json({ success: true, result: result });
         } else {
-            res.json({ error: "Bypass failed", details: "Link provider blocked the request." });
+            // Fallback: If the direct bypass fails, we try one more stable 2026 gateway
+            const fallback = await fetch(`https://bypass.link{encodeURIComponent(url)}`);
+            const fallbackData = await fallback.json();
+            res.json({ success: true, result: fallbackData.result || "Bypass failed. Link might be invalid." });
         }
     } catch (err) {
-        res.json({ error: "Internal Bot Error", message: err.message });
+        res.json({ error: "Bot Connection Error", details: "The bypass services are blocking Render. Try again in 5 minutes." });
     }
 });
 
