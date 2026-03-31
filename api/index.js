@@ -19,6 +19,7 @@ app.get('/api', async (req, res) => {
         'Accept': 'application/json',
         'Referer': 'https://bypass.city/'
     }
+});
         const data = await response.json();
         const result = data.result || data.destination || data.url;
 
