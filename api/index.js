@@ -10,8 +10,8 @@ app.get('/api', async (req, res) => {
 
     try {
         // We use regular + plus signs instead of backticks to avoid errors
-        const targetApi = "https://bypass?.vip" + encodeURIComponent(url);
-        const proxyUrl = "https://scrape.do" + token& + "&url=" + encodeURIComponent(targetApi);
+        const targetApi = "https://bypass.vip?url=" + encodeURIComponent(url);
+        const proxyUrl = "https://scrape.do?token=" + token& + "&url=" + encodeURIComponent(targetApi);
         
         const response = await fetch(proxyUrl);
         const data = await response.json();
