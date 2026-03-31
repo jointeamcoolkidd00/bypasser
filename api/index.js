@@ -19,7 +19,6 @@ app.get('/api', async (req, res) => {
         'Accept': 'application/json',
         'Referer': 'https://bypass.city/'
     }
-});
         const data = await response.json();
         const result = data.result || data.destination || data.url;
 
@@ -34,4 +33,4 @@ app.get('/api', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send("Bypasser is Online!"));
-app.listen(port, () => console.log("Server running on port " + port));
+app.listen});(port, () => console.log("Server running on port " + port));
