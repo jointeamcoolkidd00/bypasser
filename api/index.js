@@ -11,7 +11,7 @@ app.get('/api', async (req, res) => {
     try {
         // We use regular + plus signs instead of backticks to avoid errors
         const targetApi = "https://api.bypass.city/bypass?url=" + encodeURIComponent(url);
-        const proxyUrl = "https://api.scrape.do/?token=" + token + "&url=" + encodeURIComponent(targetApi);
+        const proxyUrl = "https://api.scrape.do/?token=" + token + "&url=" + encodeURIComponent(targetApi) + "&render=true";
         
         const response = await fetch(proxyUrl);
         const data = await response.json();
