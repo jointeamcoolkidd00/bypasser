@@ -10,10 +10,16 @@ app.get('/api', async (req, res) => {
 
     try {
         // We use regular + plus signs instead of backticks to avoid errors
-        const targetApi = "https://api.de-shortener.com/bypass?url=" + encodeURIComponent(url);
+        const targetApi = "https://api.bypass.city/bypass?url=" + encodeURIComponent(url);
         const proxyUrl = "https://api.scrape.do/?token=" + token + "&url=" + encodeURIComponent(targetApi) + "&render=true";
         
-        const response = await fetch(proxyUrl);
+        const response = await fetch(proxyUrl, {
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+        'Accept': 'application/json',
+        'Referer': 'https://bypass.city/'
+    }
+});
         const data = await response.json();
         const result = data.result || data.destination || data.url;
 
