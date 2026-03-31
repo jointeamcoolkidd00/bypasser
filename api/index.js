@@ -8,22 +8,22 @@ app.get('/api', async (req, res) => {
     if (!url) return res.status(400).json({ error: "Missing URL" });
 
     try {
-        // We use a newer 2026 endpoint that is currently stable for bots
-        const response = await fetch(`https://bypasstec.com{encodeURIComponent(url)}`);
-        const data = await response.json();
+        // This is a direct request to a stable 2026 bypass engine
+        const response = await fetch(`https://de-shortener.com{encodeURIComponent(url)}`, {
+            method: 'GET',
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
         
-        // This checks multiple possible keys for the final link
-        const finalLink = data.destination || data.result || data.url || data.link;
+        const data = await response.json();
+        const finalLink = data.metadata?.target || data.destination || data.result;
 
         if (finalLink) {
             res.json({ result: finalLink });
         } else {
-            // If the first one fails, we can show the reason
-            res.json({ error: "Bypass failed", details: "The service returned no link." });
+            res.json({ error: "Bypass failed", details: "Link provider blocked the request." });
         }
     } catch (err) {
-        // This will help you debug directly in your iPad browser
-        res.json({ error: "Server connection failed", message: err.message });
+        res.json({ error: "Internal Bot Error", message: err.message });
     }
 });
 
