@@ -7,21 +7,40 @@ app.get('/api', async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ error: "Missing URL" });
 
+    // YOUR PRIVATE TOKEN INTEGRATED:
+    const token = '44285332777b42bbae40b653cb4b7b9509db4c88e9b'; 
+
     try {
-        // This is a more stable 2026 gateway for bots
-        const response = await fetch(`https://bypasstec.com{encodeURIComponent(url)}`);
+        // We route the request through Scrape.do to hide Render's identity
+        const targetApi = `https://bypass.vip{encodeURIComponent(url)}`;
+        const proxyUrl = `https://scrape.do{token}&url=${encodeURIComponent(targetApi)}`;
+        
+        const response = await fetch(proxyUrl);
         const data = await response.json();
         
-        const finalLink = data.result || data.destination || data.url;
+        // This checks all possible keys for the final link
+        const finalLink = data.result || data.destination || data.url || data.link;
 
         if (finalLink) {
             res.json({ success: true, result: finalLink });
         } else {
-            res.json({ error: "Bypass failed", details: "Ad-link service blocked the request." });
+            // If the proxy works but the bypasser fails
+            res.json({ 
+                error: "Bypass failed", 
+                details: "The link provider might be down. Try a different link." 
+            });
         }
     } catch (err) {
-        res.json({ error: "Server Error", message: err.message });
+        // This catches if the proxy itself is having issues
+        res.json({ 
+            error: "Proxy Connection Error", 
+            message: "Check your Scrape.do dashboard for remaining credits." 
+        });
     }
+});
+
+app.get('/', (req, res) => {
+    res.send("Bypasser is Online! Use /api?url=LINK to bypass.");
 });
 
 app.listen(port, () => {
